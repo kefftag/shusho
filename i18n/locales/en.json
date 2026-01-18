@@ -1,0 +1,62 @@
+{
+  "appName": "Shusho",
+  "home": {
+    "title": "Receipt Scanner",
+    "apiKeyLabel": "Claude API Key",
+    "apiKeyPlaceholder": "Enter your Claude API key",
+    "saveApiKey": "Save API Key",
+    "apiKeySaved": "API Key saved successfully",
+    "takePhoto": "Take Photo",
+    "selectFromGallery": "Select from Gallery",
+    "receipts": "Receipts",
+    "settings": "Settings"
+  },
+  "camera": {
+    "title": "Scan Receipt",
+    "takePhoto": "Take Photo",
+    "retake": "Retake",
+    "usePhoto": "Use Photo",
+    "cancel": "Cancel",
+    "permissionDenied": "Camera permission is required to scan receipts"
+  },
+  "form": {
+    "title": "Receipt Details",
+    "date": "Date",
+    "time": "Time (HHMM)",
+    "address": "Address",
+    "name": "Name of Restaurant/Shop/Transportation",
+    "pax": "Pax",
+    "totalPaid": "Total Paid",
+    "taxRate": "Tax Rate",
+    "businessPurpose": "Business Purpose",
+    "notes": "Notes",
+    "photo": "Photo of Receipt",
+    "save": "Save Receipt",
+    "cancel": "Cancel",
+    "extracting": "Extracting receipt information...",
+    "extractionError": "Failed to extract receipt information"
+  },
+  "taxRate": {
+    "10": "10%",
+    "8": "8%"
+  },
+  "businessPurpose": {
+    "networking": "Networking Meals & Entertainment",
+    "client": "Client Meals & Entertainment",
+    "gifts": "Small Gifts"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "english": "English",
+    "japanese": "Japanese",
+    "apiKey": "API Key",
+    "changeApiKey": "Change API Key"
+  },
+  "receipts": {
+    "title": "Receipts",
+    "empty": "No receipts yet",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this receipt?"
+  }
+}

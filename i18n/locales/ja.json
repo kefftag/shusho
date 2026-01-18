@@ -1,0 +1,62 @@
+{
+  "appName": "シュショ",
+  "home": {
+    "title": "レシートスキャナー",
+    "apiKeyLabel": "Claude APIキー",
+    "apiKeyPlaceholder": "Claude APIキーを入力してください",
+    "saveApiKey": "APIキーを保存",
+    "apiKeySaved": "APIキーが保存されました",
+    "takePhoto": "写真を撮る",
+    "selectFromGallery": "ギャラリーから選択",
+    "receipts": "レシート",
+    "settings": "設定"
+  },
+  "camera": {
+    "title": "レシートをスキャン",
+    "takePhoto": "写真を撮る",
+    "retake": "撮り直し",
+    "usePhoto": "この写真を使う",
+    "cancel": "キャンセル",
+    "permissionDenied": "レシートをスキャンするにはカメラの許可が必要です"
+  },
+  "form": {
+    "title": "レシート詳細",
+    "date": "日付",
+    "time": "時刻 (HHMM)",
+    "address": "住所",
+    "name": "レストラン・店舗・交通機関名",
+    "pax": "人数",
+    "totalPaid": "支払総額",
+    "taxRate": "税率",
+    "businessPurpose": "業務目的",
+    "notes": "備考",
+    "photo": "レシート写真",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "extracting": "レシート情報を抽出中...",
+    "extractionError": "レシート情報の抽出に失敗しました"
+  },
+  "taxRate": {
+    "10": "10%",
+    "8": "8%"
+  },
+  "businessPurpose": {
+    "networking": "ネットワーキング会食・接待",
+    "client": "顧客接待・会食",
+    "gifts": "小額贈答品"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "english": "English",
+    "japanese": "日本語",
+    "apiKey": "APIキー",
+    "changeApiKey": "APIキーを変更"
+  },
+  "receipts": {
+    "title": "レシート",
+    "empty": "レシートがありません",
+    "delete": "削除",
+    "deleteConfirm": "このレシートを削除してもよろしいですか？"
+  }
+}
