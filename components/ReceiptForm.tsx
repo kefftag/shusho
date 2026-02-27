@@ -9,9 +9,11 @@ import {
   Image,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { useTranslation } from 'react-i18next';
+import Dropdown from './Dropdown';
 import { Receipt, TaxRate, BusinessPurpose, ExtractedReceiptData } from '../types/receipt';
 
 interface ReceiptFormProps {
@@ -30,6 +32,7 @@ export default function ReceiptForm({
   onCancel,
 }: ReceiptFormProps) {
   const { t } = useTranslation();
+
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [address, setAddress] = useState('');
@@ -40,241 +43,171 @@ export default function ReceiptForm({
   const [businessPurpose, setBusinessPurpose] = useState<BusinessPurpose>('networking');
   const [notes, setNotes] = useState('');
 
+  const taxOptions = [
+    { label: t('taxRate.10'), value: '10' },
+    { label: t('taxRate.8'), value: '8' },
+  ];
+
+  const purposeOptions = [
+    { label: t('businessPurpose.networking'), value: 'networking' },
+    { label: t('businessPurpose.client'), value: 'client' },
+    { label: t('businessPurpose.gifts'), value: 'gifts' },
+  ];
+
   useEffect(() => {
-    if (extractedData) {
-      if (extractedData.date) setDate(extractedData.date);
-      if (extractedData.time) setTime(extractedData.time);
-      if (extractedData.address) setAddress(extractedData.address);
-      if (extractedData.name) setName(extractedData.name);
-      if (extractedData.pax) setPax(extractedData.pax);
-      if (extractedData.totalPaid) setTotalPaid(extractedData.totalPaid);
-      if (extractedData.taxRate) setTaxRate(extractedData.taxRate);
-      if (extractedData.businessPurpose) setBusinessPurpose(extractedData.businessPurpose);
-    }
+    if (!extractedData) return;
+    if (extractedData.date) setDate(extractedData.date);
+    if (extractedData.time) setTime(extractedData.time);
+    if (extractedData.address) setAddress(extractedData.address);
+    if (extractedData.name) setName(extractedData.name);
+    if (extractedData.pax) setPax(extractedData.pax);
+    if (extractedData.totalPaid) setTotalPaid(extractedData.totalPaid);
+    if (extractedData.taxRate) setTaxRate(extractedData.taxRate);
+    if (extractedData.businessPurpose) setBusinessPurpose(extractedData.businessPurpose);
   }, [extractedData]);
 
   const handleSave = () => {
     if (!date || !name || !totalPaid) {
-      Alert.alert('Error', 'Please fill in at least Date, Name, and Total Paid');
+      Alert.alert('Missing fields', 'Please fill in at least Date, Name, and Total Paid.');
       return;
     }
-
-    const receipt: Omit<Receipt, 'id' | 'createdAt'> = {
-      date,
-      time,
-      address,
-      name,
-      pax,
-      totalPaid,
-      taxRate,
-      businessPurpose,
-      photoUri: imageUri,
-      notes,
-    };
-
-    onSave(receipt);
+    onSave({ date, time, address, name, pax, totalPaid, taxRate, businessPurpose, photoUri: imageUri, notes });
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
         <Image source={{ uri: imageUri }} style={styles.image} />
-      </View>
 
-      {isExtracting && (
-        <View style={styles.extractingContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
-          <Text style={styles.extractingText}>{t('form.extracting')}</Text>
+        {isExtracting && (
+          <View style={styles.extractingBox}>
+            <ActivityIndicator size="large" color="#2196F3" />
+            <Text style={styles.extractingText}>{t('form.extracting')}</Text>
+          </View>
+        )}
+
+        <View style={styles.form}>
+          <Field label={t('form.date')}>
+            <TextInput style={styles.input} value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" />
+          </Field>
+
+          <Field label={t('form.time')}>
+            <TextInput
+              style={styles.input}
+              value={time}
+              onChangeText={setTime}
+              placeholder="HHMM"
+              keyboardType="number-pad"
+              maxLength={4}
+            />
+          </Field>
+
+          <Field label={t('form.name')}>
+            <TextInput style={styles.input} value={name} onChangeText={setName} placeholder={t('form.name')} />
+          </Field>
+
+          <Field label={t('form.address')}>
+            <TextInput
+              style={[styles.input, styles.multiline]}
+              value={address}
+              onChangeText={setAddress}
+              placeholder={t('form.address')}
+              multiline
+            />
+          </Field>
+
+          <Field label={t('form.pax')}>
+            <TextInput
+              style={styles.input}
+              value={pax}
+              onChangeText={setPax}
+              placeholder="1"
+              keyboardType="number-pad"
+            />
+          </Field>
+
+          <Field label={t('form.totalPaid')}>
+            <TextInput
+              style={styles.input}
+              value={totalPaid}
+              onChangeText={setTotalPaid}
+              placeholder="0"
+              keyboardType="decimal-pad"
+            />
+          </Field>
+
+          <Field label={t('form.taxRate')}>
+            <Dropdown
+              options={taxOptions}
+              selectedValue={taxRate}
+              onValueChange={(v) => setTaxRate(v as TaxRate)}
+            />
+          </Field>
+
+          <Field label={t('form.businessPurpose')}>
+            <Dropdown
+              options={purposeOptions}
+              selectedValue={businessPurpose}
+              onValueChange={(v) => setBusinessPurpose(v as BusinessPurpose)}
+            />
+          </Field>
+
+          <Field label={t('form.notes')}>
+            <TextInput
+              style={[styles.input, styles.multiline, { height: 90 }]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t('form.notes')}
+              multiline
+            />
+          </Field>
+
+          <View style={styles.buttons}>
+            <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+              <Text style={styles.btnText}>{t('form.cancel')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+              <Text style={styles.btnText}>{t('form.save')}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      )}
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
 
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>{t('form.date')}</Text>
-        <TextInput
-          style={styles.input}
-          value={date}
-          onChangeText={setDate}
-          placeholder="YYYY-MM-DD"
-        />
-
-        <Text style={styles.label}>{t('form.time')}</Text>
-        <TextInput
-          style={styles.input}
-          value={time}
-          onChangeText={setTime}
-          placeholder="HHMM"
-          keyboardType="number-pad"
-          maxLength={4}
-        />
-
-        <Text style={styles.label}>{t('form.name')}</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('form.name')}
-        />
-
-        <Text style={styles.label}>{t('form.address')}</Text>
-        <TextInput
-          style={styles.input}
-          value={address}
-          onChangeText={setAddress}
-          placeholder={t('form.address')}
-          multiline
-        />
-
-        <Text style={styles.label}>{t('form.pax')}</Text>
-        <TextInput
-          style={styles.input}
-          value={pax}
-          onChangeText={setPax}
-          placeholder={t('form.pax')}
-          keyboardType="number-pad"
-        />
-
-        <Text style={styles.label}>{t('form.totalPaid')}</Text>
-        <TextInput
-          style={styles.input}
-          value={totalPaid}
-          onChangeText={setTotalPaid}
-          placeholder={t('form.totalPaid')}
-          keyboardType="decimal-pad"
-        />
-
-        <Text style={styles.label}>{t('form.taxRate')}</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={taxRate}
-            onValueChange={(itemValue) => setTaxRate(itemValue as TaxRate)}
-            style={styles.picker}
-          >
-            <Picker.Item label={t('taxRate.10')} value="10" />
-            <Picker.Item label={t('taxRate.8')} value="8" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>{t('form.businessPurpose')}</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={businessPurpose}
-            onValueChange={(itemValue) => setBusinessPurpose(itemValue as BusinessPurpose)}
-            style={styles.picker}
-          >
-            <Picker.Item label={t('businessPurpose.networking')} value="networking" />
-            <Picker.Item label={t('businessPurpose.client')} value="client" />
-            <Picker.Item label={t('businessPurpose.gifts')} value="gifts" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>{t('form.notes')}</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={t('form.notes')}
-          multiline
-          numberOfLines={4}
-        />
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.buttonText}>{t('form.cancel')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.buttonText}>{t('form.save')}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <Text style={styles.label}>{label}</Text>
+      {children}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  imageContainer: {
-    backgroundColor: '#000',
-    alignItems: 'center',
-    padding: 10,
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-  },
-  extractingContainer: {
-    padding: 20,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    marginHorizontal: 15,
-    marginTop: 15,
-    borderRadius: 8,
-  },
-  extractingText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: '#666',
-  },
-  formContainer: {
-    padding: 15,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginTop: 15,
-    marginBottom: 5,
-  },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  image: { width: '100%', height: 200, resizeMode: 'cover', backgroundColor: '#000' },
+  extractingBox: { margin: 16, padding: 20, backgroundColor: '#fff', borderRadius: 8, alignItems: 'center' },
+  extractingText: { marginTop: 10, color: '#666' },
+  form: { padding: 16 },
+  label: { fontSize: 13, fontWeight: '600', color: '#555', marginBottom: 6 },
   input: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     fontSize: 16,
+    color: '#333',
   },
-  notesInput: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  pickerContainer: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 8,
-    marginLeft: 10,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#757575',
-    padding: 15,
-    borderRadius: 8,
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  multiline: { textAlignVertical: 'top', minHeight: 60 },
+  buttons: { flexDirection: 'row', gap: 12, marginTop: 24, marginBottom: 40 },
+  cancelBtn: { flex: 1, backgroundColor: '#757575', padding: 16, borderRadius: 8, alignItems: 'center' },
+  saveBtn: { flex: 1, backgroundColor: '#4CAF50', padding: 16, borderRadius: 8, alignItems: 'center' },
+  btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });
