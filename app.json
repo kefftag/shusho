@@ -49,6 +49,17 @@
         {
           "photosPermission": "The app accesses your photos to let you select receipt images."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": false
+          },
+          "android": {
+            "newArchEnabled": false
+          }
+        }
       ]
     ]
   }
